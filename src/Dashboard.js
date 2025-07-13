@@ -21,41 +21,64 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch package submissions
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/contactdetails');
+// Fetch package submissions
+useEffect(() => {
+  let isMounted = true;
+  const fetchDetails = async () => {
+    try {
+      const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/details');
+      if (isMounted) {
         setDetails(response.data);
         setLoading(prev => ({ ...prev, details: false }));
-      } catch (err) {
+        setError(prev => ({ ...prev, details: null }));
+      }
+    } catch (err) {
+      if (isMounted) {
         setError(prev => ({ ...prev, details: err.message }));
         setLoading(prev => ({ ...prev, details: false }));
       }
-    };
+      console.error('Error fetching package details:', err);
+    }
+  };
 
-    fetchDetails();
-    const detailsInterval = setInterval(fetchDetails, 5000);
-    return () => clearInterval(detailsInterval);
-  }, []);
+  fetchDetails();
+  const detailsInterval = setInterval(fetchDetails, 5000);
+  
+  return () => {
+    isMounted = false;
+    clearInterval(detailsInterval);
+  };
+}, []);
 
-  // Fetch contact submissions
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/contact');
+// Fetch contact submissions
+useEffect(() => {
+  let isMounted = true;
+  const fetchContacts = async () => {
+    try {
+      const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/contact');
+      if (isMounted) {
         setContacts(response.data);
         setLoading(prev => ({ ...prev, contacts: false }));
-      } catch (err) {
+        setError(prev => ({ ...prev, contacts: null }));
+      }
+    } catch (err) {
+      if (isMounted) {
         setError(prev => ({ ...prev, contacts: err.message }));
         setLoading(prev => ({ ...prev, contacts: false }));
       }
-    };
+      console.error('Error fetching contacts:', err);
+    }
+  };
 
-    fetchContacts();
-    const contactsInterval = setInterval(fetchContacts, 5000);
-    return () => clearInterval(contactsInterval);
-  }, []);
-
+  fetchContacts();
+  const contactsInterval = setInterval(fetchContacts, 5000);
+  
+  return () => {
+    isMounted = false;
+    clearInterval(contactsInterval);
+  };
+}, []);
+  
   const filteredDetails = details.filter(entry => 
     entry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     entry.packageType.toLowerCase().includes(searchTerm.toLowerCase())
