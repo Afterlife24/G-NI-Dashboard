@@ -24,7 +24,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/contact');
+        const response = await axios.get('https://0emu7rxwk2.execute-api.eu-west-3.amazonaws.com/contactdetails');
         setDetails(response.data);
         setLoading(prev => ({ ...prev, details: false }));
       } catch (err) {
